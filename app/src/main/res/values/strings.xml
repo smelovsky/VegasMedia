@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Vegas Media</string>
+    <string name="theme">Theme</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="tab_name_home">Home</string>
+    <string name="tab_name_camera">Camera</string>
+    <string name="tab_name_movie">Movie</string>
+    <string name="tab_name_picasso">Picasso</string>
+    <string name="tab_name_forismatic">Forismatic</string>
+    <string name="tab_name_settings">Settings</string>
+    <string name="tab_name_contacts">Contacts</string>
+    <string name="ask_confirmation_to_exit_from_app">Ask confirmation to exit from app</string>
+    <string name="wake_lock">Go to sleep (wake lock)</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="do_you_really_want_to_close_the_application">Do you really want to close the application?</string>
+    <string name="permissions">Permissions</string>
+    <string name="all_permissions_granted">All permissions granted</string>
+    <string name="play">Play</string>
+    <string name="next_forismatic">Next Forismatic</string>
+    <string name="forismatic_lang">Forismatic language</string>
+    <string name="forismatic_lang_rus">RUS</string>
+    <string name="forismatic_lang_eng">ENG</string>
+    <string name="take_a_picture">Take a picture</string>
+</resources>
