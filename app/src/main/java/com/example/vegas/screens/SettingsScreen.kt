@@ -30,9 +30,9 @@ fun SettingsScreen() {
     ) {
         val theme = listOf(stringResource(R.string.light), stringResource(R.string.dark))
 
-        val (selectedThemeOption, onThemeOptionSelected) = remember { mutableStateOf(viewModel.currentTheme) }
+        val (selectedThemeOption, onThemeOptionSelected) = remember { mutableStateOf(viewModel.currentTheme.value) }
         val checkedStateExitFromApp = remember { mutableStateOf(viewModel.askToExitFromApp) }
-        val checkedStateWakeLock = remember { mutableStateOf(viewModel.wakeLock) }
+        val checkedStateKeepScreenOn = remember { mutableStateOf(viewModel.keepScreenOn.value) }
 
         val forismaticLang = listOf(stringResource(R.string.forismatic_lang_eng), stringResource(R.string.forismatic_lang_rus))
         val (selectedForismaticLangOption, onForismaticLangOptionSelected) = remember { mutableStateOf(viewModel.currentForismaticLang) }
@@ -58,7 +58,7 @@ fun SettingsScreen() {
                         selected = (theme_index == selectedThemeOption),
                         onClick = {
                             onThemeOptionSelected(theme_index)
-                            viewModel.currentTheme = theme_index
+                            viewModel.currentTheme.value = theme_index
                             AppFunction.putPreferences.run()
                         },
                         colors = androidx.compose.material3.RadioButtonDefaults.colors(),
@@ -72,7 +72,7 @@ fun SettingsScreen() {
                         ),
                         onClick = {
                             onThemeOptionSelected(theme_index)
-                            viewModel.currentTheme = theme_index
+                            viewModel.currentTheme.value = theme_index
                             AppFunction.putPreferences.run()
                         }
                     )
@@ -106,22 +106,22 @@ fun SettingsScreen() {
 
             Row {
                 androidx.compose.material3.Checkbox(
-                    checked = checkedStateWakeLock.value,
+                    checked = checkedStateKeepScreenOn.value,
                     onCheckedChange = {
-                        checkedStateWakeLock.value = it
-                        viewModel.wakeLock = it
+                        checkedStateKeepScreenOn.value = it
+                        viewModel.keepScreenOn.value = it
                         AppFunction.putPreferences.run()
                     },
                     colors = androidx.compose.material3.CheckboxDefaults.colors(),
                     modifier = Modifier.padding(10.dp),
                 )
                 ClickableText(
-                    text = AnnotatedString(stringResource(R.string.wake_lock)),
+                    text = AnnotatedString(stringResource(R.string.keep_screen_on)),
                     modifier = Modifier.padding(0.dp, 20.dp),
                     style = TextStyle(color = MaterialTheme.colorScheme.primary, fontSize = 18.sp),
                     onClick = { //offset ->
-                        checkedStateWakeLock.value = !checkedStateWakeLock.value
-                        viewModel.wakeLock = !viewModel.wakeLock
+                        checkedStateKeepScreenOn.value = !checkedStateKeepScreenOn.value
+                        viewModel.keepScreenOn.value = !viewModel.keepScreenOn.value
                         AppFunction.putPreferences.run()
                     }
                 )

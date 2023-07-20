@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.PowerManager
 import android.provider.Settings
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -106,12 +107,9 @@ class MainActivity : ComponentActivity() {
     val APP_PREFERENCES_THEME = "theme"
     val APP_PREFERENCES_ASK_TO_EXIT_FROM_APP = "ask_to_exit_from_app"
     val APP_PREFERENCES_FORISMATIC_LANG = "forismatic_lang"
-    val APP_PREFERENCES_WAKE_LOCK = "wake_lock"
+    val APP_PREFERENCES_KEEP_SCREEN_ON = "keep_screen_on"
 
-    lateinit var theme: MutableState<Boolean>
     lateinit var permissionsGranted: MutableState<Boolean>
-    lateinit var wakeLockPowerManager: PowerManager.WakeLock
-
     lateinit var showPicture: MutableState<Boolean>
     lateinit var selectedPicasso: MutableState<String>
 
@@ -127,15 +125,9 @@ class MainActivity : ComponentActivity() {
         AppFunction.putPreferences.run = ::putPreferences
 
         setContent {
-
             viewModel = hiltViewModel()
 
             getPreferences()
-
-            if (!viewModel.wakeLock) {
-                val powerManager = getSystemService(POWER_SERVICE) as PowerManager
-                wakeLockPowerManager = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK, "VegasMedia")
-            }
 
             INTERNET = remember { mutableStateOf(false) }
             ACCESS_NETWORK_STATE = remember { mutableStateOf(false) }
@@ -146,11 +138,15 @@ class MainActivity : ComponentActivity() {
             CAMERA = remember { mutableStateOf(false) }
             RECEIVE_BOOT_COMPLETED = remember { mutableStateOf(false) }
 
-            theme = remember { mutableStateOf(viewModel.currentTheme == 1) }
             permissionsGranted = remember { mutableStateOf(hasAllPermissions()) }
-
             showPicture = remember { (mutableStateOf(viewModel.tmp_bitmap != null)) }
             selectedPicasso = remember { mutableStateOf(viewModel.getPicassoItems().URLS[0]) }
+
+            if (viewModel.keepScreenOn.value) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            } else {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            }
 
             viewModel.updateForismatic()
 
@@ -164,7 +160,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            VegasTheme(theme.value) {
+            VegasTheme(viewModel.currentTheme.value == 1) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -376,7 +372,6 @@ class MainActivity : ComponentActivity() {
         READ_EXTERNAL_STORAGE.value = permission
         WRITE_EXTERNAL_STORAGE.value = permission
 
-
         return permission
     }
 
@@ -410,22 +405,15 @@ class MainActivity : ComponentActivity() {
 
     fun putPreferences() {
         val editor = prefs.edit()
-        editor.putInt(APP_PREFERENCES_THEME, viewModel.currentTheme).apply()
+        editor.putInt(APP_PREFERENCES_THEME, viewModel.currentTheme.value).apply()
         editor.putBoolean(APP_PREFERENCES_ASK_TO_EXIT_FROM_APP, viewModel.askToExitFromApp).apply()
-        editor.putBoolean(APP_PREFERENCES_WAKE_LOCK, viewModel.wakeLock).apply()
+        editor.putBoolean(APP_PREFERENCES_KEEP_SCREEN_ON, viewModel.keepScreenOn.value).apply()
         editor.putInt(APP_PREFERENCES_FORISMATIC_LANG, viewModel.currentForismaticLang).apply()
-
-        theme.value = (viewModel.currentTheme == 1)
-
-        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
-        wakeLockPowerManager = powerManager.newWakeLock(
-            if (!viewModel.wakeLock) PowerManager.PARTIAL_WAKE_LOCK else PowerManager.FULL_WAKE_LOCK, "VegasMedia")
-
     }
 
     fun getPreferences() {
         if(prefs.contains(APP_PREFERENCES_THEME)){
-            viewModel.currentTheme = prefs.getInt(APP_PREFERENCES_THEME, 0)
+            viewModel.currentTheme.value = prefs.getInt(APP_PREFERENCES_THEME, 0)
         }
         if(prefs.contains(APP_PREFERENCES_ASK_TO_EXIT_FROM_APP)){
             viewModel.askToExitFromApp = prefs.getBoolean(APP_PREFERENCES_ASK_TO_EXIT_FROM_APP, true)
@@ -434,8 +422,8 @@ class MainActivity : ComponentActivity() {
             viewModel.currentForismaticLang = prefs.getInt(APP_PREFERENCES_FORISMATIC_LANG, 0)
         }
 
-        if(prefs.contains(APP_PREFERENCES_WAKE_LOCK)){
-            viewModel.wakeLock = prefs.getBoolean(APP_PREFERENCES_WAKE_LOCK, true)
+        if(prefs.contains(APP_PREFERENCES_KEEP_SCREEN_ON)){
+            viewModel.keepScreenOn.value = prefs.getBoolean(APP_PREFERENCES_KEEP_SCREEN_ON, true)
         }
     }
 

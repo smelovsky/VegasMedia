@@ -44,9 +44,11 @@ class VegasViewModel @Inject constructor(
         )
     }
 
-    var currentTheme: Int = 0
     var askToExitFromApp: Boolean = true
-    var wakeLock: Boolean = true
+
+
+    var currentTheme = mutableStateOf(0)
+    val keepScreenOn = mutableStateOf(false)
 
     fun getMovieDefaultUri(context: Context): Uri {
         var file: File = copyFileToExternalStorage(R.raw.vegas, "vegas.mp4", context)
